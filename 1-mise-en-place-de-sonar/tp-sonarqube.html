@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TP SonarQube Local</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        .nav-link {
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #60a5fa;
+        }
+
+        /* Boîtes pédagogiques */
+        .box-objectif {
+            border-left: 4px solid #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .box-concept {
+            border-left: 4px solid #8b5cf6;
+            background-color: #faf5ff;
+        }
+
+        .box-tache {
+            border-left: 4px solid #0ea5e9;
+            background-color: #f0f9ff;
+        }
+
+        .box-validation {
+            border-left: 4px solid #10b981;
+            background-color: #ecfdf5;
+        }
+
+        .box-reflexion {
+            border-left: 4px solid #f59e0b;
+            background-color: #fffbeb;
+        }
+
+        .box-warning {
+            border-left: 4px solid #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .box-indice {
+            border-left: 4px solid #64748b;
+            background-color: #f8fafc;
+        }
+
+        .box-tip {
+            border-left: 4px solid #06b6d4;
+            background-color: #ecfeff;
+        }
+
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 9999px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+
+        details summary {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+
+    <!-- HEADER -->
+    <header class="bg-slate-900 text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto p-4 lg:p-5">
+            <div class="flex items-center gap-3 mb-3">
+                <svg class="w-8 h-8 text-orange-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                <div>
+                    <h1 class="text-2xl font-bold">TP — Qualité Code : SonarQube</h1>
+                </div>
+            </div>
+            <nav class="flex space-x-4 text-xs font-semibold overflow-x-auto pb-1 whitespace-nowrap">
+                <a href="#intro" class="nav-link text-slate-300">0. Intro</a>
+                <a href="#module1" class="nav-link text-blue-400">1. Installation</a>
+                <a href="#module2" class="nav-link text-purple-400">2. Config Admin</a>
+                <a href="#module3" class="nav-link text-sky-400">3. Analyse Projet</a>
+                <a href="#module4" class="nav-link text-emerald-400">4. Correction Issues</a>
+                <a href="#module5" class="nav-link text-violet-400">5. Quality Gate</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 lg:p-6 mt-4 flex-grow space-y-16">
+
+        <!-- ============================================================ -->
+        <!-- INTRODUCTION                                                  -->
+        <!-- ============================================================ -->
+        <section id="intro" class="scroll-mt-32">
+            <div class="bg-white rounded-xl shadow-md border border-gray-200 p-6 mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-3"><i
+                        class="fa-solid fa-circle-info mr-2 text-blue-500"></i>Contexte et objectifs</h2>
+                <p class="text-gray-700 mb-4">Dans le cadre du <strong>TP RPG</strong>, vous allez mettre en place une
+                    plateforme d'inspection continue de la qualité du code : <strong>SonarQube Community</strong>. Cet
+                    outil vous permettra d'identifier les bugs, vulnérabilités et la dette technique de votre
+                    application.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div class="font-bold text-slate-700 mb-1"><i
+                                class="fa-solid fa-book mr-1 text-blue-500"></i>Docs
+                            de référence
+                        </div>
+                        <ul class="text-slate-600 space-y-1">
+                            <li>• sonarqube.org</li>
+                            <li>• docs.sonarsource.com</li>
+                            <li>• Clean as You Code (concept)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div class="font-bold text-slate-700 mb-1"><i
+                                class="fa-solid fa-toolbox mr-1 text-purple-500"></i>Outils
+                            nécessaires
+                        </div>
+                        <ul class="text-slate-600 space-y-1">
+                            <li>• Docker Desktop</li>
+                            <li>• Docker Compose</li>
+                            <li>• Projet Java</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                        <div class="font-bold text-slate-700 mb-1"><i
+                                class="fa-solid fa-file-lines mr-1 text-green-500"></i>Livrables
+                        </div>
+                        <ul class="text-slate-600 space-y-1">
+                            <li>• Dashboard Sonar opérationnel</li>
+                            <li>• Rapport d'enquête qualité</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+                <h3 class="text-lg font-bold text-slate-800 mb-4"><i
+                        class="fa-solid fa-magnifying-glass-chart mr-2 text-slate-500"></i>La démarche Qualité</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 text-sm">
+                    <div class="bg-blue-50 border-2 border-blue-400 rounded-xl p-4">
+                        <div class="font-bold text-blue-900 mb-2"><i
+                                class="fa-solid fa-shield-halved mr-1 text-blue-500"></i>Investigation
+                        </div>
+                        <p class="text-blue-800 text-xs">Ne vous contentez pas de voir des chiffres. Allez chercher la
+                            cause racine de chaque problème détecté.</p>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                        <div class="font-bold text-emerald-900 mb-2">Compréhension</div>
+                        <p class="text-emerald-800 text-xs">Utilisez la documentation de Sonar pour comprendre pourquoi
+                            une pratique est considérée comme mauvaise.</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                        <div class="font-bold text-amber-900 mb-2">Autonomie</div>
+                        <p class="text-amber-800 text-xs">L'outil vous guide, mais c'est à vous de décider comment
+                            améliorer votre code intelligemment.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODULE 1 — INSTALLATION                                      -->
+        <!-- ============================================================ -->
+        <section id="module1" class="scroll-mt-32 border-t pt-10">
+            <div class="flex items-center mb-6">
+                <span class="section-badge bg-blue-600">1</span>
+                <h2 class="text-3xl font-bold text-slate-800">Installation avec Docker Compose</h2>
+            </div>
+
+            <div class="box-concept p-5 rounded-xl shadow-sm mb-6">
+                <h3 class="font-bold text-purple-900 mb-3"><i class="fa-solid fa-graduation-cap mr-2"></i>Concepts clés
+                </h3>
+                <ul class="text-sm text-purple-800 space-y-1 list-disc list-inside">
+                    <li><strong>Persistance :</strong> Utilisation d'une base PostgreSQL pour conserver vos données.
+                    </li>
+                    <li><strong>Volumes :</strong> Stockage des plugins et des logs en dehors du conteneur.</li>
+                    <li><strong>Isolation :</strong> Communication interne sécurisée entre Sonar et sa base de données.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+                <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+                <p class="text-sm text-blue-900">Déployer une instance SonarQube fonctionnelle accessible sur <code
+                        class="code-font bg-blue-100 px-1 rounded">http://localhost:9000</code>.</p>
+            </div>
+
+            <div class="box-warning p-4 rounded-xl shadow-sm mb-6">
+                <h4 class="font-bold text-red-900 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Attention —
+                    Configuration Système</h4>
+                <div class="space-y-4 text-sm text-red-800">
+                    <div>
+                        <strong>🐧 Linux & WSL2 (Windows) :</strong>
+                        <p>Elasticsearch nécessite une limite de mémoire virtuelle plus élevée. Lancez cette commande
+                            sur votre hôte (ou dans votre terminal WSL) :</p>
+                        <code
+                            class="block mt-1 bg-red-100 p-2 rounded code-font text-xs">sudo sysctl -w vm.max_map_count=524288</code>
+                    </div>
+                    <div>
+                        <strong>🍎 macOS (Unix) :</strong>
+                        <p>Il n'y a généralement pas de configuration système requise. Assurez-vous simplement que
+                            Docker dispose d'au moins <strong>4 Go de RAM</strong> dans ses réglages.</p>
+                    </div>
+                    <div>
+                        <strong>🪟 Windows (Docker Desktop) :</strong>
+                        <p>Si vous utilisez le moteur WSL2, la commande Linux ci-dessus s'applique. Si SonarQube ne
+                            démarre pas (logs "max virtual memory areas... too low"), ouvrez un PowerShell et lancez :
+                        </p>
+                        <code
+                            class="block mt-1 bg-red-100 p-2 rounded code-font text-xs">wsl -d docker-desktop -u root sysctl -w vm.max_map_count=524288</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-validation p-5 rounded-xl shadow-sm mb-6">
+                <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+                <ol class="text-sm text-emerald-800 space-y-2">
+                    <li>1. Lancez la stack : <code
+                            class="code-font bg-emerald-100 px-1 rounded">docker compose up -d</code></li>
+                    <li>2. Vérifiez que les conteneurs sont <code
+                            class="code-font bg-emerald-100 px-1 rounded">Up</code>
+                    <li>3. Accédez à l'interface via votre navigateur.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODULE 2 — CONFIG ADMIN                                      -->
+        <!-- ============================================================ -->
+        <section id="module2" class="scroll-mt-32 border-t pt-10">
+            <div class="flex items-center mb-6">
+                <span class="section-badge bg-purple-600">2</span>
+                <h2 class="text-3xl font-bold text-slate-800">Configuration de l'Administrateur</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Premier accès</h3>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-grow space-y-4 text-sm">
+                        <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <div class="font-bold text-slate-800">Identifiants par défaut</div>
+                            <ul class="mt-2 space-y-1">
+                                <li>• Login : <code class="code-font bg-slate-200 px-1 rounded">admin</code></li>
+                                <li>• Password : <code class="code-font bg-slate-200 px-1 rounded">admin</code></li>
+                            </ul>
+                        </div>
+                        <div class="box-tache p-4 rounded-lg">
+                            <p class="font-bold text-sky-800 mb-2">Sécurisation immédiate</p>
+                            <p class="text-sky-900">Dès la première connexion, SonarQube vous demandera de changer le
+                                mot de passe par défaut. Notez-le bien !</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-tip p-4 rounded-xl shadow-sm">
+                <h4 class="font-bold text-cyan-900 mb-2"><i class="fa-solid fa-lightbulb mr-2"></i>Patience</h4>
+                <p class="text-sm text-cyan-900">Le démarrage peut prendre 1 à 2 minutes. Si vous recevez une erreur
+                    "Bad Gateway" ou si la page ne charge pas, attendez que la base de données soit prête.</p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODULE 3 — ANALYSE PROJET                                    -->
+        <!-- ============================================================ -->
+        <section id="module3" class="scroll-mt-32 border-t pt-10">
+            <div class="flex items-center mb-6">
+                <span class="section-badge bg-sky-600">3</span>
+                <h2 class="text-3xl font-bold text-slate-800">Scanner votre projet</h2>
+            </div>
+
+            <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+                <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+                <p class="text-sm text-blue-900">Lier votre projet RPG à SonarQube et lancer une première analyse
+                    complète <strong>sans rien installer</strong> sur votre machine hôte.</p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Étape 3.1 — Préparation dans Sonar</h3>
+                <div class="space-y-3 text-sm">
+                    <p>Créer un projet local avec la clé <strong>rpg-game</strong>. Puis générez un
+                        <strong>Token</strong> d'analyse.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Étape 3.2 — Exécution du Scanner (via Docker)</h3>
+                <p class="text-sm text-gray-700 mb-4">Comme vous n'avez pas forcément Maven installé localement, vous
+                    allez construire la commande <code class="code-font">docker run</code> qui permet de compiler votre
+                    projet et d'envoyer les résultats à SonarQube — le tout sans rien installer sur votre machine.</p>
+
+                <div class="box-tache p-4 rounded-lg text-sm mb-6">
+                    <p class="font-bold text-sky-800 mb-2"><i class="fa-solid fa-terminal mr-2"></i>Votre mission</p>
+                    <p class="text-sky-900">Construisez et exécutez la commande Docker appropriée depuis la
+                        <strong>racine
+                            de votre projet RPG</strong>. Elle doit :
+                    </p>
+                    <ul class="mt-2 space-y-1 text-sky-900 list-disc list-inside">
+                        <li>Utiliser une image Maven avec <strong>Java 25</strong> (le projet cible Java 25)</li>
+                        <li>Monter votre code source dans le conteneur</li>
+                        <li>Permettre au conteneur d'accéder à SonarQube sur votre machine</li>
+                        <li>Lancer la compilation, les tests et l'analyse Sonar</li>
+                        <li>Passer les paramètres de connexion à votre instance SonarQube</li>
+                    </ul>
+                </div>
+
+                <div class="box-indice p-4 rounded-lg mb-4 text-sm">
+                    <h4 class="font-bold text-slate-700 mb-2"><i class="fa-solid fa-puzzle-piece mr-2"></i>Indices —
+                        construire la commande</h4>
+                    <ul class="text-slate-700 space-y-2">
+                        <li><i class="fa-solid fa-cube mr-2 text-slate-400"></i><strong>Image :</strong> cherchez sur
+                            Docker Hub une image officielle <code class="code-font">maven</code> incluant le JDK 25.
+                            Le tag suit la convention <code class="code-font">maven:X.X-eclipse-temurin-25-...</code>.
+                        </li>
+                        <li><i class="fa-solid fa-folder-open mr-2 text-slate-400"></i><strong>Volume :</strong>
+                            l'option <code class="code-font">-v</code> permet de monter un dossier local dans le
+                            conteneur. Réfléchissez à comment passer le chemin courant dynamiquement.</li>
+                        <li><i class="fa-solid fa-network-wired mr-2 text-slate-400"></i><strong>Réseau :</strong> le
+                            conteneur doit pouvoir joindre <code class="code-font">localhost:9000</code> sur votre
+                            hôte. Quelle option Docker permet de partager le réseau de l'hôte ?</li>
+                        <li><i class="fa-solid fa-play mr-2 text-slate-400"></i><strong>Goal Maven :</strong> le but
+                            est de compiler, exécuter les tests ET lancer l'analyse Sonar en une seule commande.
+                            Consultez la documentation du plugin <code class="code-font">sonar-maven-plugin</code>.</li>
+                        <li><i class="fa-solid fa-key mr-2 text-slate-400"></i><strong>Paramètres Sonar :</strong>
+                            Maven accepte des propriétés système via <code class="code-font">-Dclé=valeur</code>.
+                            Quelles propriétés le scanner Sonar attend-il pour se connecter ?</li>
+                    </ul>
+                </div>
+
+                <div class="box-warning p-4 rounded-lg text-sm mb-4">
+                    <h4 class="font-bold text-red-900 mb-3"><i
+                            class="fa-solid fa-triangle-exclamation mr-2"></i>Problèmes courants — que faire si ça ne
+                        marche pas ?</h4>
+                    <div class="space-y-4 text-red-800">
+                        <div>
+                            <p class="font-semibold"><i class="fa-solid fa-java mr-1"></i> Java 25 —
+                                <code class="code-font">UnsupportedOperationException</code>
+                            </p>
+                            <p class="mt-1">Java 25 restreint l'accès par réflexion aux modules internes de la JVM.
+                                Le plugin Sonar va <strong>forcément</strong> échouer avec cette erreur si vous
+                                n'ouvrez pas explicitement les modules nécessaires. Cherchez comment passer des options
+                                JVM à Maven via la variable <code class="code-font">MAVEN_OPTS</code> et le flag
+                                <code class="code-font">--add-opens</code>.
+                            </p>
+                            <p class="mt-1 text-xs italic">Mot-clé : <code class="code-font bg-red-100 px-1 rounded">MAVEN_OPTS --add-opens java.base
+                                    ALL-UNNAMED</code></p>
+                        </div>
+                        <div>
+                            <p class="font-semibold"><i class="fa-brands fa-windows mr-1"></i> Windows / Git Bash —
+                                <em>"the working directory is invalid"</em>
+                            </p>
+                            <p class="mt-1">Git Bash transforme automatiquement les chemins Unix en chemins Windows.
+                                Cherchez comment désactiver cette conversion de chemin dans Git Bash via une variable
+                                d'environnement à préfixer à votre commande.</p>
+                            <p class="mt-1 text-xs italic">Mot-clé : <code
+                                    class="code-font bg-red-100 px-1 rounded">MSYS_NO_PATHCONV</code></p>
+                        </div>
+                        <div>
+                            <p class="font-semibold"><i class="fa-solid fa-globe mr-1"></i> macOS / Windows sans
+                                <code class="code-font">--network host</code>
+                            </p>
+                            <p class="mt-1">Sur macOS et Windows, Docker tourne dans une VM : <code
+                                    class="code-font">localhost</code> dans le conteneur ne pointe pas vers votre
+                                machine. Cherchez l'adresse DNS spéciale fournie par Docker Desktop pour joindre
+                                l'hôte.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-validation p-5 rounded-xl shadow-sm">
+                <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+                <p class="text-sm text-emerald-900">Une fois le scan terminé (BUILD SUCCESS), rafraîchissez SonarQube.
+                    Votre projet doit afficher ses premiers résultats.</p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODULE 4 — ENQUÊTE QUALITÉ                                   -->
+        <!-- ============================================================ -->
+        <section id="module4" class="scroll-mt-32 border-t pt-10">
+            <div class="flex items-center mb-6">
+                <span class="section-badge bg-emerald-600">4</span>
+                <h2 class="text-3xl font-bold text-slate-800">Correction des issues</h2>
+            </div>
+
+            <div class="box-objectif p-5 rounded-xl shadow-sm mb-6">
+                <h3 class="font-bold text-blue-900 mb-2"><i class="fa-solid fa-bullseye mr-2"></i>Objectif</h3>
+                <p class="text-sm text-blue-900">SonarQube a détecté <strong>14 issues</strong> dans votre projet.
+                    Corrigez-les toutes dans le code, relancez le scanner, et atteignez
+                    <strong>0 issue ouverte</strong>.
+                </p>
+                <p class="text-sm text-blue-900 mt-2">Vous êtes libres de corriger le code existant ou de
+                    <strong>réécrire entièrement</strong> les parties qui vous semblent trop difficiles à améliorer —
+                    tant que le comportement de l'API reste identique.
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4"><i
+                        class="fa-solid fa-shield-halved mr-2 text-emerald-600"></i>Filet de sécurité — Tests unitaires
+                </h3>
+                <p class="text-sm text-gray-700 mb-4">Pour vous permettre de modifier ou réécrire le code en toute
+                    confiance, un fichier de tests unitaires couvrant <strong>100 % des comportements</strong> de l'API
+                    a été fourni dans votre projet :</p>
+                <div class="bg-slate-800 rounded-xl p-3 code-font text-xs text-sky-300 mb-4 overflow-x-auto">
+                    <pre>src/test/java/com/epsi/rpg/controller/GameControllerTest.java</pre>
+                </div>
+                <p class="text-sm text-gray-700 mb-4">Ces tests vérifient chaque endpoint et chaque cas particulier
+                    (joueur mort, ennemi tué, montée de niveau, boss COOP, mode PVP, items...). Exécutez-les à chaque
+                    modification pour détecter immédiatement toute régression :</p>
+                <div class="box-tip p-3 rounded-lg text-xs">
+                    <p><strong>Règle d'or :</strong> si tous les tests passent après votre modification, vous n'avez
+                        pas introduit de régression. Si un test échoue, votre correction a cassé quelque chose — lisez
+                        le message d'erreur pour comprendre lequel.</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4"><i
+                        class="fa-solid fa-list-check mr-2 text-sky-600"></i>Marche à suivre</h3>
+                <ol class="text-sm text-gray-700 space-y-3 list-decimal list-inside">
+                    <li>Ouvrez l'onglet <strong>Issues</strong> dans SonarQube et parcourez chaque issue.</li>
+                    <li>Pour chaque issue, cliquez sur <strong>"Why is this an issue?"</strong> pour comprendre ce que
+                        Sonar reproche.</li>
+                    <li>Corrigez le code — ou réécrivez la section concernée si nécessaire.</li>
+                    <li><strong>Relancez les tests</strong> pour vérifier qu'aucune régression n'a été introduite.</li>
+                    <li>Répétez jusqu'à ce que toutes les issues soient corrigées, puis <strong>relancez le
+                            scanner</strong> Sonar.</li>
+                </ol>
+            </div>
+
+            <div class="box-validation p-5 rounded-xl shadow-sm">
+                <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation</h4>
+                <p class="text-sm text-emerald-900 mb-1">Le TP est terminé lorsque :</p>
+                <ul class="text-sm text-emerald-900 list-disc list-inside space-y-1">
+                    <li>Le dashboard SonarQube affiche <strong>0 issue ouverte</strong></li>
+                    <li>Tous les tests unitaires passent (<strong>BUILD SUCCESS</strong>)</li>
+                </ul>
+                <p class="text-sm text-emerald-900 mt-2">Faites une capture d'écran du dashboard comme preuve.</p>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- MODULE 5 — QUALITY GATE                                      -->
+        <!-- ============================================================ -->
+        <section id="module5" class="scroll-mt-32 border-t pt-10">
+            <div class="flex items-center mb-6">
+                <span class="section-badge bg-violet-600">5</span>
+                <h2 class="text-3xl font-bold text-slate-800">Quality Gate</h2>
+            </div>
+
+            <div class="box-concept p-5 rounded-xl shadow-sm mb-6">
+                <h3 class="font-bold text-purple-900 mb-3"><i class="fa-solid fa-graduation-cap mr-2"></i>Concept</h3>
+                <p class="text-sm text-purple-800 mb-2">Un <strong>Quality Gate</strong> est un ensemble de conditions
+                    que votre projet doit satisfaire pour être considéré comme prêt à être livré. C'est la porte de
+                    sortie qualité : si le projet ne passe pas, le pipeline CI/CD peut être bloqué automatiquement.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 text-xs">
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                        <div class="font-bold text-purple-800 mb-1"><i
+                                class="fa-solid fa-circle-xmark mr-1 text-red-500"></i>Échec</div>
+                        <p class="text-purple-700">Le projet ne respecte pas les seuils définis. En CI/CD, le
+                            déploiement est bloqué.</p>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                        <div class="font-bold text-purple-800 mb-1"><i
+                                class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>Succès</div>
+                        <p class="text-purple-700">Toutes les conditions sont remplies. Le code peut passer en
+                            production.</p>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                        <div class="font-bold text-purple-800 mb-1"><i
+                                class="fa-solid fa-gears mr-1 text-blue-500"></i>Personnalisable</div>
+                        <p class="text-purple-700">Chaque équipe définit ses propres seuils selon ses exigences
+                            qualité.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 5.1 -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Étape 5.1 — Explorer le Quality Gate par défaut</h3>
+
+                <div class="box-tache p-4 rounded-lg text-sm mb-4">
+                    <p class="font-bold text-sky-800 mb-2"><i class="fa-solid fa-magnifying-glass mr-2"></i>À faire</p>
+                    <ol class="text-sky-900 space-y-1 list-decimal list-inside">
+                        <li>Dans SonarQube, allez dans <strong>Quality Gates</strong> (menu principal).</li>
+                        <li>Ouvrez le gate <strong>"Sonar way"</strong> — c'est le gate par défaut.</li>
+                        <li>Lisez les conditions définies.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 5.2 -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Étape 5.2 — Créer un Quality Gate personnalisé</h3>
+
+                <div class="box-tache p-4 rounded-lg text-sm mb-6">
+                    <p class="font-bold text-sky-800 mb-2"><i class="fa-solid fa-plus mr-2"></i>À faire</p>
+                    <ol class="text-sky-900 space-y-2 list-decimal list-inside">
+                        <li>Créez un nouveau Quality Gate nommé <strong>"RPG Gate"</strong>.</li>
+                        <li>Ajoutez les conditions suivantes :</li>
+                    </ol>
+                    <div class="mt-3 ml-5 overflow-x-auto">
+                        <table class="text-xs w-full border-collapse">
+                            <thead>
+                                <tr class="bg-sky-100 text-sky-800">
+                                    <th class="text-left p-2 border border-sky-200">Métrique</th>
+                                    <th class="text-left p-2 border border-sky-200">Opérateur</th>
+                                    <th class="text-left p-2 border border-sky-200">Seuil</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sky-900">
+                                <tr>
+                                    <td class="p-2 border border-sky-100">Issues</td>
+                                    <td class="p-2 border border-sky-100">est supérieur à</td>
+                                    <td class="p-2 border border-sky-100 font-bold">0</td>
+                                </tr>
+                                <tr class="bg-sky-50">
+                                    <td class="p-2 border border-sky-100">Coverage</td>
+                                    <td class="p-2 border border-sky-100">est inférieur à</td>
+                                    <td class="p-2 border border-sky-100 font-bold">50%</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 border border-sky-100">Duplicated Lines (%)</td>
+                                    <td class="p-2 border border-sky-100">est supérieur à</td>
+                                    <td class="p-2 border border-sky-100 font-bold">3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <li class="mt-3 text-sky-900 list-decimal ml-4">Appliquez ce gate au projet
+                        <strong>rpg-game</strong> via
+                        <em>Project Settings → Quality Gate</em>.
+                    </li>
+                </div>
+
+                <div class="box-indice p-3 rounded-lg text-xs">
+                    <p><strong>Piste Coverage :</strong> pour que SonarQube mesure la couverture de code, Maven doit
+                        générer un rapport JaCoCo. Cherchez comment configurer <code
+                            class="code-font">jacoco-maven-plugin</code> dans votre <code
+                            class="code-font">pom.xml</code> et ajouter <code
+                            class="code-font">sonar.coverage.jacoco.xmlReportPaths</code> à votre commande de
+                        scan.</p>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 5.3 -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200 mb-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Étape 5.3 — Observer et analyser</h3>
+
+                <div class="box-tache p-4 rounded-lg text-sm mb-4">
+                    <p class="font-bold text-sky-800 mb-2"><i class="fa-solid fa-chart-bar mr-2"></i>À faire</p>
+                    <ol class="text-sky-900 space-y-1 list-decimal list-inside">
+                        <li>Relancez le scanner avec le plugin JaCoCo configuré.</li>
+                        <li>Observez le résultat du Quality Gate sur votre dashboard.</li>
+                        <li>Identifiez quelle(s) condition(s) font échouer le gate.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="box-validation p-5 rounded-xl shadow-sm">
+                <h4 class="font-bold text-emerald-900 mb-2"><i class="fa-solid fa-circle-check mr-2"></i>Validation
+                    finale du TP</h4>
+                <ul class="text-sm text-emerald-900 list-disc list-inside space-y-1">
+                    <li>Le Quality Gate <strong>"RPG Gate"</strong> est configuré et appliqué au projet</li>
+                    <li>Le dashboard affiche <strong>0 issue</strong> et le gate passe sur cette condition</li>
+                </ul>
+                <p class="text-sm text-emerald-900 mt-2">Capture d'écran du dashboard avec le Quality Gate
+                    <strong>Passed</strong> comme livrable final.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 py-8 mt-20 border-t border-slate-800">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <p class="text-sm">Support TP SonarQube</p>
+            <p class="text-xs mt-2">© 2025-2026 — Support Pédagogique</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
